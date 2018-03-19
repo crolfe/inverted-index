@@ -6,7 +6,7 @@ This project implements an inverted index, which is commonly used to provide ful
 A corpus (or collection of documents) is indexed in the following manner:
 
 - each document is tokenized (e.g. split on whitespace)
-- the tokens are normalized by case folding, stripping newlines etc.  There are more advanced techniques such as stemming and lemmatization, which are not done in this code
+- the tokens are normalized by case folding, stripping newlines etc.  There are more advanced techniques such as [stemming](https://en.wikipedia.org/wiki/Stemming) and [lemmatization](https://en.wikipedia.org/wiki/Lemmatisation), which are not done in this code
 - overly commond words, or "stopwords" (e.g. a, as, it, the) are removed, as they are unlikely to do anything but add noise to the search results
 - Statistics about the following pieces of information are built up:
   - the number of times a term appears in the current document (IDF)
@@ -23,7 +23,7 @@ A corpus (or collection of documents) is indexed in the following manner:
 
 ## Searching
 
-This repo uses a ranked retrieval function (BM25), which is intended to provide more relevant search results than a boolean search.  This controls for factors such as document length (longer documents contain more terms, but they may not necessarily be more relevant than a shorter document also containing some/all of the query terms)
+This repo uses a ranked retrieval function ([BM25](https://en.wikipedia.org/wiki/Okapi_BM25)), which is intended to provide more relevant search results than a boolean search.  This controls for factors such as document length (longer documents contain more terms, but they may not necessarily be more relevant than a shorter document also containing some/all of the query terms)
 
 Approach:
 
