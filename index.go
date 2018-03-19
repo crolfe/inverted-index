@@ -121,8 +121,6 @@ type Corpus struct {
 func index() {
 	start := timestamp()
 
-	fmt.Println("LEXICON_FILE is:", LEXICON_FILE)
-
 	// setup stoplist
 	stopFunc := getStopFunc()
 

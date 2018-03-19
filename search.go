@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -46,6 +47,7 @@ func (r ResultSlice) Less(i, j int) bool {
 type QueryResults struct {
 	ProcessingTime string      `json:"processing_time"`
 	Results        ResultSlice `json:"documents"`
+	TotalResults   int64       `json:"total_results"`
 }
 
 func loadLexicon() {
@@ -137,6 +139,7 @@ func processQuery(terms []string) (docScores map[string]float64) {
 	isStopWord := getStopFunc()
 
 	for _, term := range terms {
+		term = strings.ToLower(term)
 		if isStopWord(term) {
 			continue
 		}
@@ -166,19 +169,6 @@ func processQuery(terms []string) (docScores map[string]float64) {
 	return docScores
 }
 
-func cmdSearch(terms []string) {
-	// used to print out query results when called from commandline
-	results := search(terms)
-
-	fmt.Println("Found", len(results.Results), "documents that match your query:", query)
-	fmt.Println("Doc Id | Relevance")
-	for _, result := range results.Results {
-		fmt.Println(result.Id, ":", result.Relevance)
-	}
-
-	fmt.Println("Query processed in", results.ProcessingTime)
-}
-
 func search(terms []string) (qr *QueryResults) {
 	start := timestamp()
 
@@ -190,15 +180,32 @@ func search(terms []string) (qr *QueryResults) {
 	}
 
 	sort.Sort(sort.Reverse(results))
-
-	if len(results) > maxResults {
+	totalResults := int64(len(results))
+	if totalResults > maxResults {
 		// some crude pagination
 		results = results[:maxResults]
 	}
 
-	processTime := time.Since(start)
-
-	qr = &QueryResults{ProcessingTime: string(processTime), Results: results}
+	processTime := fmt.Sprintf("%s", time.Since(start))
+	qr = &QueryResults{
+		Results:        results,
+		ProcessingTime: processTime,
+		TotalResults:   totalResults,
+	}
 
 	return
+}
+
+func cmdSearch(terms []string) {
+	// used to print out query results when called from commandline
+	results := search(terms)
+
+	fmt.Println("Doc Id | Relevance")
+	fmt.Println("------------------")
+	for _, result := range results.Results {
+		fmt.Println(result.Id, ":", result.Relevance)
+	}
+
+	fmt.Println("Returning", len(results.Results), "of", results.TotalResults, "documents that match your query:", query)
+	fmt.Printf("Query processed in %s\n", results.ProcessingTime)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	action, corpus, stoplist, query string
+	action, corpus, stoplist string
 )
 
 const LEXICON_FILE = "lexicon.json"
@@ -18,9 +18,21 @@ const POSTING_FILE = "posting.json"
 const DOC_MAP_FILE = "docmap.json"
 const METADATA_FILE = "meta.json"
 
+type queryterms []string
+
+func (q *queryterms) String() string {
+	return fmt.Sprintf("%s", *q)
+}
+func (q *queryterms) Set(value string) error {
+	*q = append(*q, value)
+	return nil
+}
+
+var query queryterms
+
 func init() {
 	flag.StringVar(&action, "action", "", "Valid options: index, search")
-	flag.StringVar(&query, "query", "", "Space separated query terms")
+	flag.Var(&query, "query", "Add additonal -query flags per query term")
 	flag.StringVar(&corpus, "corpus", "", "<corpus>")
 	flag.StringVar(&stoplist, "stoplist", "", "<stoplist>")
 }
@@ -72,11 +84,11 @@ func main() {
 		index()
 		return
 	} else if action == "search" {
-		if query == "" {
+		if len(query) == 0 {
 			fmt.Println("You must set the -query paramter")
 			os.Exit(1)
 		}
-		cmdSearch([]string{"cheese", "factory"})
+		cmdSearch(query)
 		return
 	}
 
