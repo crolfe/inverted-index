@@ -90,6 +90,8 @@ func main() {
 		}
 		cmdSearch(query)
 		return
+	} else if action == "serve" {
+		listenAndServe()
 	}
 
 	if action == "" {

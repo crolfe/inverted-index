@@ -22,34 +22,6 @@ var (
 	meta    Metadata
 )
 
-type Result struct {
-	Id        string  `json:id`
-	Relevance float64 `json:relevance`
-}
-
-type ResultSlice []*Result
-
-// Len is part of sort.Interface.
-func (r ResultSlice) Len() int {
-	return len(r)
-}
-
-// Swap is part of sort.Interface.
-func (r ResultSlice) Swap(i, j int) {
-	r[i], r[j] = r[j], r[i]
-}
-
-// Less is part of sort.Interface.
-func (r ResultSlice) Less(i, j int) bool {
-	return r[i].Relevance < r[j].Relevance
-}
-
-type QueryResults struct {
-	ProcessingTime string      `json:"processing_time"`
-	Results        ResultSlice `json:"documents"`
-	TotalResults   int64       `json:"total_results"`
-}
-
 func loadLexicon() {
 	f := openFile(LEXICON_FILE)
 	defer f.Close()
